@@ -2,8 +2,8 @@ import click
 from flask.cli import with_appcontext
 import pandas as pd
 
-from library.server.instance import server
-from library.controlers.books import *
+from api.server.instance import server
+from api.controlers.books import *
 
 @click.command(name='import_authors')
 @click.argument('csv')

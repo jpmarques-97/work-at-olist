@@ -1,8 +1,8 @@
 from flask import Flask
 from flask_restx import Api, Resource
 
-from library.server.instance import server
-from library.models.books import bookSchema, authorSchema
+from api.server.instance import server
+from api.models.books import bookSchema, authorSchema
 
 app, api = server.app, server.api
 

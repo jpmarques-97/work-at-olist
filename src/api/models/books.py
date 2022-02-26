@@ -1,7 +1,7 @@
 from pydoc import describe
 from flask_restx import fields
 
-from library.server.instance import server
+from api.server.instance import server
 
 bookSchema = server.api.model('Book', {
     'title': fields.String(),
