@@ -1,6 +1,7 @@
 from flask import Flask
 from flask_restx import Api
 from sqlalchemy import create_engine
+from flask_sqlalchemy import SQLAlchemy
 
 class Server():
     def __init__(self):
@@ -12,7 +13,9 @@ class Server():
             description='A simple book API',
             doc='/docs'
             )
-        self.engine = create_engine('sqlite:///test.db')
+        self.app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///test.db'
+        self.app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+        self.db = SQLAlchemy(self.app)
 
     def run(self):
         self.app.run(
