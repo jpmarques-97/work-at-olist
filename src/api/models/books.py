@@ -1,4 +1,3 @@
-from sqlalchemy import Table, Column, Integer, String, MetaData, ForeignKey
 from api.server.instance import server
 
 class Author(server.db.Model):
@@ -17,7 +16,7 @@ class Book(server.db.Model):
    id = server.db.Column(server.db.Integer, primary_key = True)
    title = server.db.Column(server.db.String(120))
    edition = server.db.Column(server.db.Integer)
-   publication_year = server.db.Column(server.db.String(120))
+   publication_year = server.db.Column(server.db.DateTime)
    author_id = server.db.Column(server.db.ForeignKey('author.id'))
 
    def __repr__(self):
