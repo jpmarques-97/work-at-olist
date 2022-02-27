@@ -1,15 +1,19 @@
 from api.server.instance import server
 
+
+book_authors = server.db.Table('book_authors',
+   server.db.Column('book_id', server.db.Integer,  server.db.ForeignKey('book.id')),
+   server.db.Column('user_id', server.db.Integer, server.db.ForeignKey('author.id')),
+)
+
 class Author(server.db.Model):
    __tablename__ = 'author'
    id = server.db.Column(server.db.Integer, primary_key = True)
    name = server.db.Column(server.db.String(120))
-
-   def __init__(self, name):
-      self.name = name
+   books = server.db.relationship('Book', secondary=book_authors, backref='books')
 
    def __repr__(self):
-      return '<User %r>' % self.name
+      return f'<User {self.name}>'
 
 class Book(server.db.Model):
    __tablename__ = 'book'
@@ -17,7 +21,7 @@ class Book(server.db.Model):
    title = server.db.Column(server.db.String(120))
    edition = server.db.Column(server.db.Integer)
    publication_year = server.db.Column(server.db.DateTime)
-   author_id = server.db.Column(server.db.ForeignKey('author.id'))
+   authors = server.db.relationship('Author', secondary=book_authors, backref='authors')
 
    def __repr__(self):
-      return '<User %r>' % self.title
+      return f'<Book {self.title}>'

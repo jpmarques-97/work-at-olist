@@ -16,6 +16,7 @@ class Server():
         self.app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///test.db'
         self.app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
         self.db = SQLAlchemy(self.app)
+        self.db.create_all()
 
     def run(self):
         self.app.run(

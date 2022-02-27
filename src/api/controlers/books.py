@@ -34,29 +34,35 @@ class BookList(Resource):
                     "title": book.title,
                     "edition": book.edition,
                     "publication_year": book.publication_year.strftime('%Y-%m-%d'),
-                    "author_id": book.author_id
+                    'authors': [{'name': author.name} for author in  book.authors]
                 } for book in books]
         return books, 200
 
     @api.expect(bookSchema)
     def post(self):
         response = api.payload
-        author = Author.query.filter_by(id=response['author_id']).first()
-        if author:
-            book = Book(title=response['title'], edition=response['edition'], 
-                        publication_year=datetime.strptime(response['publication_year'],'%Y-%m-%d'),
-                        author_id = author.id)
+        result = 'O livro nao foi inserido', 200
+        authors_id = response['authors_id']
+        if authors_id:
+            book = Book(
+                            title=response['title'], 
+                            edition=response['edition'], 
+                            publication_year=datetime.strptime(response['publication_year'],'%Y-%m-%d'),
+                        )
+            for author_id in authors_id:
+                author = Author.query.filter_by(id=author_id).first()
+                book.authors.append(author)
             server.db.session.add(book)
             server.db.session.commit()
-            return response, 200
-        else:
-            return 'author does not exist', 200
+            result = response, 200
+            print(book.authors)
+        return result
+
     
 
 @api.route('/books/<int:id>')
 class BookSingle(Resource):
 
-    @api.marshal_with(bookSchema)
     def get(self, id):
         book = Book.query.filter_by(id=id).first()
         print(Book.query.filter_by(id=id).first())
@@ -66,7 +72,7 @@ class BookSingle(Resource):
                 'title': book.title,
                 'edition': book.edition,
                 'publication_year': book.publication_year.strftime('%Y-%m-%d'),
-                'author_id': book.author_id
+                'authors': [{'name': author.name} for author in  book.authors]
                 }, 200
             
         return result
@@ -86,21 +92,23 @@ class BookSingle(Resource):
         book = Book.query.filter_by(id=id).first()
         result = 'Book not fount', 200
         if book:
-            if 'author_id' in response.keys():
-                author = Author.query.filter_by(id=response['author_id']).first()
-                book.author_id = author.id
             if 'title' in response.keys():
                 book.title = response['title']
             if 'publication_year' in response.keys():
                 book.publication_year = datetime.strptime(response['publication_year'],'%Y-%m-%d')
             if 'edition' in response.keys():
                 book.edition = response['edition']
+            if 'authors_id' in response.keys():
+                book.authors = []
+                for author_id in response['authors_id']:
+                    author = Author.query.filter_by(id=author_id).first()
+                    book.authors.append(author)
             server.db.session.commit()
             result = {
                     'title': book.title,
                     'edition': book.edition,
                     'publication_year': book.publication_year.strftime('%Y-%m-%d'),
-                    'author_id': book.author_id
+                    'authors': [{'name': author.name} for author in  book.authors]
                     }, 200
         return result
 
@@ -108,16 +116,19 @@ class BookSingle(Resource):
 @api.route('/authors')
 class AuthorList(Resource):
 
-    @api.marshal_list_with(authorSchema)
     def get(self):
         authors = Author.query.all()
-        authors = [{"name": author.name} for author in authors]
+        authors = [{
+                    "id" : author.id,
+                    "name": author.name,
+                    "books": [{"book_title": book.title} for book in author.books]
+                    } for author in authors]
         return authors, 200
 
     @api.expect(authorSchema)
     def post(self):
         response = api.payload
-        author = Author(response['name'])
+        author = Author(name = response['name'])
         server.db.session.add(author)
         server.db.session.commit()
         return response, 200

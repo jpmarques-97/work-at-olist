@@ -7,7 +7,7 @@ bookSchema = server.api.model('Book', {
     'title': fields.String(),
     'edition': fields.Integer(),
     'publication_year': fields.Date(),
-    'author_id': fields.Integer()
+    'authors_id': fields.List(fields.Integer)
 })
 
 authorSchema = server.api.model('Author', {
