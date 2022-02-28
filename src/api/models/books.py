@@ -10,7 +10,7 @@ class Author(server.db.Model):
    __tablename__ = 'author'
    id = server.db.Column(server.db.Integer, primary_key = True)
    name = server.db.Column(server.db.String(120))
-   books = server.db.relationship('Book', secondary=book_authors, backref='books')
+   books = server.db.relationship('Book', secondary=book_authors, backref='books', viewonly=True)
 
    def __repr__(self):
       return f'<User {self.name}>'

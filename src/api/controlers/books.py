@@ -80,6 +80,7 @@ class BookSingle(Resource):
     def delete(self, id):
         book = Book.query.filter_by(id=id).first()
         result = 'Book not found', 200
+        print(book)
         if book:
             server.db.session.delete(book)
             server.db.session.commit()
